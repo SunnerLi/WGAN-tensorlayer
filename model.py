@@ -1,65 +1,67 @@
+from gan import GAN
 import tensorlayer as tl
 import tensorflow as tf
 
-class WGAN(object):
-    def __init__(self, filter_base = 32, fc_unit_num=1024, conv_depth=2):
-        self.filter_base = filter_base
-        self.fc_unit_num = fc_unit_num
-        self.conv_depth = conv_depth
-
-    def buildPrint(self, string):
-        print('-' * 100)
-        print(string)
-        print('-' * 100)
+class WassersterinGAN(GAN):
+    def __init__(self, filter_base = 32, fc_unit_num=1024, conv_depth=2, lambda_panelty_factor = 10.0):
+        super(WassersterinGAN, self).__init__(filter_base, fc_unit_num, conv_depth, lambda_panelty_factor)
 
     def build(self, noise_ph, image_ph):
-        # Update parameter
+        # Update parameter and build network
         self.img_height = image_ph.get_shape().as_list()[1]
         self.img_width  = image_ph.get_shape().as_list()[2]
+        self.buildGraph(noise_ph, image_ph)
 
-        # Build network
-        self.buildPrint('Build generator ...')
-        generated_tensor = self.getGenerator(noise_ph)
-        self.buildPrint('Build true discriminator ...')
-        self.true_logits = self.getDiscriminator(image_ph, reuse=False)
-        self.buildPrint('Build fake discriminator ...')
-        self.fake_logits = self.getDiscriminator(generated_tensor, reuse=True)
+        # Define origin loss (Earth Mover distance)
+        self.generator_loss = tf.reduce_mean(self.fake_logits)
+        self.discriminator_loss = tf.reduce_mean(self.true_logits) - tf.reduce_mean(self.fake_logits)
 
-    def getDiscriminator(self, img_ph, reuse=False):
-        with tf.variable_scope('discriminator', reuse=reuse):
-            tl.layers.set_name_reuse(reuse)
-            network = tl.layers.InputLayer(img_ph, name ='discriminator_input_layer')
-            network = tl.layers.ReshapeLayer(network, [tf.shape(img_ph)[0], self.img_height, self.img_width, 1])
-            for i in range(self.conv_depth):
-                network = tl.layers.Conv2d(network, n_filter = self.filter_base * (2  ** i), name ='discriminator_conv2d_%s'%str(1+i*2))
-                network = tl.layers.Conv2d(network, n_filter = self.filter_base * (2  ** i), name ='discriminator_conv2d_%s'%str(2+i*2))
-                network = tl.layers.BatchNormLayer(network, act = tf.nn.relu, name ='discriminator_batchnorm_layer_%s'%str(i))
-                network = tl.layers.MaxPool2d(network, name='discriminator_maxpool_%s'%str(i))
-            network = tl.layers.FlattenLayer(network)
-            network = tl.layers.DenseLayer(network, n_units = self.fc_unit_num, act = tf.nn.relu, name ='discriminator_dense_layer')
-            network = tl.layers.DenseLayer(network, n_units = 1)
-            return network.outputs
+        # Gradient panelty
+        epsilon = tf.random_normal([])
+        combination_sample = epsilon * self.generated_tensor + (1 - epsilon) * image_ph
+        panelty_logits = self.getDiscriminator(combination_sample, reuse=True)
+        combination_gradient = tf.gradients(panelty_logits, combination_sample)[0]
+        self.panelty_loss = tf.sqrt(tf.reduce_mean(tf.square(combination_gradient), axis=1))
+        self.panelty_loss = tf.reduce_mean(tf.square(self.panelty_loss - 1) * self.lambda_panelty_factor)
+        self.discriminator_loss += self.panelty_loss
 
-    def getGenerator(self, noise_ph):
-        with tf.variable_scope('generator'):
-            network = tl.layers.InputLayer(noise_ph)
-            network = tl.layers.DenseLayer(network, n_units = self.fc_unit_num, name ='generator_dense_layer_1')
-            network = tl.layers.BatchNormLayer(network, act = tf.nn.relu, name ='generator_batchnorm_layer_1')
-            network = tl.layers.DenseLayer(network, n_units = 7 * 7 * self.filter_base * (2  ** (self.conv_depth - 1)), name ='generator_dense_layer_2')
-            network = tl.layers.ReshapeLayer(network, tf.stack([tf.shape(noise_ph)[0], 7, 7, self.filter_base * (2  ** (self.conv_depth - 1))]))
-            network = tl.layers.BatchNormLayer(network, act = tf.nn.relu, name ='generator_batchnorm_layer_2')
-            for i in range(self.conv_depth, 0, -1):
-                height = 7 * (2 ** (self.conv_depth - i + 1))
-                width  = 7 * (2 ** (self.conv_depth - i + 1))
-                channel = self.filter_base * (2  ** (i - 1))
-                network = tl.layers.DeConv2d(network, n_out_channel = channel, strides = (2, 2), out_size = (height, width), name ='generator_decnn2d_%s'%str(1+i*2))
-                network = tl.layers.DeConv2d(network, n_out_channel = channel, strides = (2, 2), out_size = (height, width), name ='generator_decnn2d_%s'%str(2+i*2))
-                network = tl.layers.BatchNormLayer(network, act = tf.nn.relu, name ='generator_batchnorm_layer_%s'%str(self.conv_depth-i+3))
-            network = tl.layers.DeConv2d(network, n_out_channel = 1, strides = (2, 2), out_size = (height, width), name ='generator_decnn2d_final')
-            return network.outputs
+        # Define optimizer in order
+        self.generator_optimize = None
+        self.discriminator_optimize = None
+        generator_vars = [var for var in tf.global_variables() if 'generator' in var.name]
+        discriminator_vars = [var for var in tf.global_variables() if 'discriminator' in var.name]
+        with tf.control_dependencies(tf.get_collection(tf.GraphKeys.UPDATE_OPS)):
+            self.generator_optimize = tf.train.AdamOptimizer(learning_rate=0.0001, beta1=0.5, beta2=0.9).minimize(self.generator_loss, var_list=generator_vars)
+            self.discriminator_optimize = tf.train.AdamOptimizer(learning_rate=0.0001, beta1=0.5, beta2=0.9).minimize(self.discriminator_loss, var_list=discriminator_vars)
+
+
+class DCGAN(GAN):
+    def __init__(self, filter_base = 32, fc_unit_num=1024, conv_depth=2, lambda_panelty_factor = 10.0):
+        super(DCGAN, self).__init__(filter_base, fc_unit_num, conv_depth, lambda_panelty_factor)
+
+    def build(self, noise_ph, image_ph):
+        # Update parameter and build network
+        self.img_height = image_ph.get_shape().as_list()[1]
+        self.img_width  = image_ph.get_shape().as_list()[2]
+        self.buildGraph(noise_ph, image_ph)
+
+        # Define origin loss (Jensen Shannon divergence)
+        self.generator_loss = tf.nn.sigmoid_cross_entropy_with_logits(logits=self.fake_logits, labels=tf.ones_like(self.fake_logits))
+        self.discriminator_loss = tf.nn.sigmoid_cross_entropy_with_logits(logits=self.fake_logits, labels=tf.zeros_like(self.fake_logits)) + \
+            tf.nn.sigmoid_cross_entropy_with_logits(logits=self.true_logits, labels=tf.ones_like(self.true_logits))
+
+        # Define optimizer in order
+        self.generator_optimize = None
+        self.discriminator_optimize = None
+        generator_vars = [var for var in tf.global_variables() if 'generator' in var.name]
+        discriminator_vars = [var for var in tf.global_variables() if 'discriminator' in var.name]
+        with tf.control_dependencies(tf.get_collection(tf.GraphKeys.UPDATE_OPS)):
+            self.generator_optimize = tf.train.AdamOptimizer(learning_rate=0.0001, beta1=0.5, beta2=0.9).minimize(self.generator_loss, var_list=generator_vars)
+            self.discriminator_optimize = tf.train.AdamOptimizer(learning_rate=0.0001, beta1=0.5, beta2=0.9).minimize(self.discriminator_loss, var_list=discriminator_vars)
+
 
 if __name__ == '__main__':
     noise_ph = tf.placeholder(tf.float32, [None, 100])
     image_ph = tf.placeholder(tf.float32, [None, 28, 28, 1])
-    net = WGAN()
+    net = DCGAN()
     net.build(noise_ph, image_ph)
