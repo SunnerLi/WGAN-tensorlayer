@@ -11,9 +11,9 @@ class ImageHandler(object):
         if dataset_name == 'lsun':
             if not os.path.exists('data/'):
                 os.mkdir('data')
-            os.system('python lsun/download.py -c church_outdoor')
-            os.system('mv church_outdoor_train_lmdb.zip data')
-            os.system('mv church_outdoor_val_lmdb.zip data')
+            # os.system('python lsun/download.py -c church_outdoor')
+            # os.system('unzip church_outdoor_train_lmdb.zip')
+            os.system('python3 lsun/data.py export church_outdoor_train_lmdb --out_dir data')
         else:
             raise Exception('invalid dataset name...')
 
