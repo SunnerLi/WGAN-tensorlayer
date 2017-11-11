@@ -5,7 +5,7 @@ import cv2
 import os
 
 class ImageHandler(object):
-    def __init__(self, dataset_name='mnist', batch_size=32):
+    def __init__(self, dataset_name='mnist', resize_length=64, batch_size=32):
         """
             dataset_name can be:
                 1. mnist
@@ -15,6 +15,7 @@ class ImageHandler(object):
         self.dataset_name = dataset_name
         self.batch_size = batch_size
         self.batch_counter = 0
+        self.resize_length = resize_length
         self.image_tensor = None
         self.download()        
 
@@ -48,7 +49,7 @@ class ImageHandler(object):
     def getBatchImage(self):
         result = self.image_tensor[self.batch_counter * self.batch_size : self.batch_counter * self.batch_size + self.batch_size]
         if self.dataset_name != 'mnist':
-            result = [cv2.resize(cv2.imread(img_name), (28, 28)) for img_name in result]
+            result = [cv2.resize(cv2.imread(img_name), (self.resize_length, self.resize_length)) for img_name in result]
             result = np.asarray(result, dtype=np.float)
         if (self.batch_counter + 1) == len(self.image_tensor) // self.batch_size:
             self.batch_counter = 0
