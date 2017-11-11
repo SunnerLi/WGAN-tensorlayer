@@ -56,9 +56,17 @@ class ImageHandler(object):
             self.batch_counter += 1
         return result/255.
 
+    def getImageNum(self):
+        return len(self.image_tensor)
+
+    def getImageDim(self):
+        if self.dataset_name == 'mnist':
+            return 1
+        return 3
+
 def generateNoice(batch_size, dim):
     return np.random.normal(loc=0.0, scale=1.0, size=[batch_size, dim])
 
 if __name__ == '__main__':
     handler = ImageHandler('lsun')
-    print(handler.getBatchImage())
+    print(np.shape(handler.getBatchImage()))

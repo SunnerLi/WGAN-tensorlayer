@@ -2,11 +2,12 @@ import tensorlayer as tl
 import tensorflow as tf
 
 class GAN(object):
-    def __init__(self, filter_base, fc_unit_num, conv_depth, lambda_panelty_factor):
+    def __init__(self, filter_base, fc_unit_num, conv_depth, lambda_panelty_factor, img_depth):
         self.filter_base = filter_base
         self.fc_unit_num = fc_unit_num
         self.conv_depth = conv_depth
         self.lambda_panelty_factor = lambda_panelty_factor
+        self.img_depth = img_depth
 
     def buildPrint(self, string):
         print('-' * 100)
@@ -49,7 +50,7 @@ class GAN(object):
                 width  = 7 * (2 ** (self.conv_depth - i + 1))
                 channel = self.filter_base * (2  ** (i - 1))
                 network = tl.layers.DeConv2d(network, n_out_channel = channel, strides = (2, 2), out_size = (height, width), name ='generator_decnn2d_%s'%str(1+i*2))
-                network = tl.layers.DeConv2d(network, n_out_channel = channel, strides = (2, 2), out_size = (height, width), name ='generator_decnn2d_%s'%str(2+i*2))
+                network = tl.layers.DeConv2d(network, n_out_channel = channel, strides = (1, 1), out_size = (height, width), name ='generator_decnn2d_%s'%str(2+i*2))
                 network = tl.layers.BatchNormLayer(network, act = tf.nn.relu, name ='generator_batchnorm_layer_%s'%str(self.conv_depth-i+3))
-            network = tl.layers.DeConv2d(network, n_out_channel = 1, strides = (2, 2), out_size = (height, width), name ='generator_decnn2d_final')
+            network = tl.layers.DeConv2d(network, n_out_channel = self.img_depth, strides = (1, 1), out_size = (height, width), name ='generator_decnn2d_final')
             return network.outputs

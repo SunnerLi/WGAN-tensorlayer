@@ -3,8 +3,8 @@ import tensorlayer as tl
 import tensorflow as tf
 
 class WassersterinGAN(GAN):
-    def __init__(self, filter_base = 32, fc_unit_num=1024, conv_depth=2, lambda_panelty_factor = 10.0):
-        super(WassersterinGAN, self).__init__(filter_base, fc_unit_num, conv_depth, lambda_panelty_factor)
+    def __init__(self, img_channel, filter_base = 16, fc_unit_num=1024, conv_depth=2, lambda_panelty_factor = 10.0):
+        super(WassersterinGAN, self).__init__(filter_base, fc_unit_num, conv_depth, lambda_panelty_factor, img_channel)
 
     def build(self, noise_ph, image_ph):
         # Update parameter and build network
@@ -36,8 +36,8 @@ class WassersterinGAN(GAN):
 
 
 class DCGAN(GAN):
-    def __init__(self, filter_base = 32, fc_unit_num=1024, conv_depth=2, lambda_panelty_factor = 10.0):
-        super(DCGAN, self).__init__(filter_base, fc_unit_num, conv_depth, lambda_panelty_factor)
+    def __init__(self, img_channel, filter_base = 32, fc_unit_num=1024, conv_depth=2, lambda_panelty_factor = 10.0):
+        super(DCGAN, self).__init__(filter_base, fc_unit_num, conv_depth, lambda_panelty_factor, img_channel)
 
     def build(self, noise_ph, image_ph):
         # Update parameter and build network
