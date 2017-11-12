@@ -1,4 +1,4 @@
-from gan import GAN
+from gan2 import GAN
 import tensorlayer as tl
 import tensorflow as tf
 
@@ -19,10 +19,11 @@ class WassersterinGAN(GAN):
         # Gradient panelty
         epsilon = tf.random_normal([])
         combination_sample = epsilon * self.generated_tensor + (1 - epsilon) * image_ph
+        self.buildPrint('Build panelty discriminator ...')
         panelty_logits = self.getDiscriminator(combination_sample, reuse=True)
         combination_gradient = tf.gradients(panelty_logits, combination_sample)[0]
         self.panelty_loss = tf.sqrt(tf.reduce_mean(tf.square(combination_gradient), axis=1))
-        self.panelty_loss = tf.reduce_mean(tf.square(self.panelty_loss - 1) * self.lambda_panelty_factor)
+        self.panelty_loss = tf.reduce_mean(tf.square(self.panelty_loss - 1.0) * self.lambda_panelty_factor)
         self.discriminator_loss += self.panelty_loss
 
         # Define optimizer in order
@@ -63,5 +64,5 @@ class DCGAN(GAN):
 if __name__ == '__main__':
     noise_ph = tf.placeholder(tf.float32, [None, 100])
     image_ph = tf.placeholder(tf.float32, [None, 28, 28, 1])
-    net = DCGAN()
+    net = WassersterinGAN()
     net.build(noise_ph, image_ph)
