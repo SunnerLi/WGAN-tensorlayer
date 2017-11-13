@@ -1,10 +1,8 @@
-from __future__ import print_function
 import argparse
-import cv2
-import lmdb
 import numpy
+import lmdb
+import cv2
 import os
-from os.path import exists, join
 
 __author__ = 'Fisher Yu'
 __email__ = 'fy@cs.princeton.edu'

@@ -1,22 +1,15 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 """
     This script is downloaded from https://github.com/fyu/lsun/blob/master/download.py
 """
-
-from __future__ import print_function, division
-import argparse
-import json
 from os.path import join
-
 import subprocess
+import argparse
 import urllib2
+import json
 
 __author__ = 'Fisher Yu'
 __email__ = 'fy@cs.princeton.edu'
 __license__ = 'MIT'
-
 
 def list_categories(tag):
     url = 'http://lsun.cs.princeton.edu/htbin/list.cgi?tag=' + tag

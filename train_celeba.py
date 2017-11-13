@@ -13,15 +13,15 @@ if __name__ == '__main__':
     image_ph = tf.placeholder(tf.float32, [None, 64, 64, 3])
 
     # Train toward WGAN
-    # net = WassersterinGAN(img_channel=3)
-    # net.build(noise_ph, image_ph)
-    # trainGAN(noise_ph, image_ph, net, handler, 
-        # output_img_dir='output/celeba/wgan',
-        # output_csv_dir='output/celeba/wgan/celeba_wgan.csv')
+    net = WassersterinGAN(img_channel=3)
+    net.build(noise_ph, image_ph)
+    trainGAN(noise_ph, image_ph, net, handler, 
+        output_dir='output/celeba/wgan',
+        output_csv_name='celeba_wgan.csv')
 # 
     # Train toward DCGAN
-    # net = DCGAN(img_channel=3)
-    # net.build(noise_ph, image_ph)
-    # trainGAN(noise_ph, image_ph, net, handler, 
-        # output_img_dir='output/celeba/dcgan',
-        # output_csv_dir='output/celeba/dcgan/celeba_dcgan.csv')
+    net = DCGAN(img_channel=3)
+    net.build(noise_ph, image_ph)
+    trainGAN(noise_ph, image_ph, net, handler, 
+        output_dir='output/celeba/dcgan',
+        output_csv_name='celeba_dcgan.csv')
