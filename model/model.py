@@ -33,7 +33,7 @@ class WassersterinGAN(GAN):
         discriminator_vars = [var for var in tf.global_variables() if 'discriminator' in var.name]
         with tf.control_dependencies(tf.get_collection(tf.GraphKeys.UPDATE_OPS)):
             self.generator_optimize = tf.train.AdamOptimizer(learning_rate=0.0002, beta1=0.5, beta2=0.9).minimize(self.generator_loss, var_list=generator_vars)
-            self.discriminator_optimize = tf.train.AdamOptimizer(learning_rate=0.005, beta1=0.5, beta2=0.9).minimize(self.discriminator_loss, var_list=discriminator_vars)
+            self.discriminator_optimize = tf.train.AdamOptimizer(learning_rate=0.005, beta1=0.5, beta2=0.9).minimize(self.discriminator_loss, var_list=discriminator_vars)        
 
 class DCGAN(GAN):
     def __init__(self, img_channel, filter_base = 32, fc_unit_num = 1024, conv_depth = 4, lambda_panelty_factor = 10.0, name='dcgan_'):

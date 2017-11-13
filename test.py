@@ -1,13 +1,12 @@
 from data_helper import ImageHandler, generateNoice
-from wgan import WassersterinGAN
-from dcgan import DCGAN
+from model.model2 import GaussianGAN1, GaussianGAN2, GaussianGAN3
 import tensorflow as tf
 import numpy as np
 
 if __name__ == '__main__':
     noise_ph = tf.placeholder(tf.float32, [None, 100])
     image_ph = tf.placeholder(tf.float32, [None, 64, 64, 1])
-    net = DCGAN(img_channel=1)
+    net = GaussianGAN3(img_channel=1)
     net.build(noise_ph, image_ph)
 
     with tf.Session() as sess:

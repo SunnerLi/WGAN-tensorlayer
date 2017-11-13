@@ -12,6 +12,7 @@ class GAN(object):
         self.lambda_panelty_factor = lambda_panelty_factor
         self.img_depth = img_channel
         self.name = name
+        self.variable_set = set()
 
     def buildPrint(self, string):
         print('-' * 100)
@@ -38,6 +39,8 @@ class GAN(object):
                 network = tl.layers.BatchNormLayer(network, act = leaky_relu, name ='discriminator_batchnorm_layer_%s'%str(i), is_train = True)
             network = tl.layers.FlattenLayer(network)
             network = tl.layers.DenseLayer(network, n_units = 1, act = tf.identity, name = 'discriminator_dense_layer_final')
+            for i in range(len(network.all_params)):
+                self.variable_set.add(network.all_params[i])
             return network.outputs
 
     def getGenerator(self, noise_ph):
@@ -62,4 +65,6 @@ class GAN(object):
             network = tl.layers.DeConv2d(network, n_out_channel = self.img_depth, strides = (2, 2), out_size = (self.img_height, self.img_width), name ='generator_decnn2d_final')
             network = tl.layers.ReshapeLayer(network, [tf.shape(noise_ph)[0], self.img_height, self.img_width, self.img_depth], name ='generator_reshape_layer')
             network = tl.layers.BatchNormLayer(network, act = tf.nn.tanh, name ='generator_batchnorm_layer_final', is_train = True)
+            for i in range(len(network.all_params)):
+                self.variable_set.add(network.all_params[i])
             return network.outputs
