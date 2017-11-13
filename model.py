@@ -63,6 +63,6 @@ class DCGAN(GAN):
 
 if __name__ == '__main__':
     noise_ph = tf.placeholder(tf.float32, [None, 100])
-    image_ph = tf.placeholder(tf.float32, [None, 28, 28, 1])
-    net = WassersterinGAN()
+    image_ph = tf.placeholder(tf.float32, [None, 64, 64, 3])
+    net = WassersterinGAN(img_channel=3)
     net.build(noise_ph, image_ph)
