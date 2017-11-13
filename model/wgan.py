@@ -64,10 +64,11 @@ class WassersterinGAN(object):
             for i in range(self.conv_depth):
                 network = tl.layers.Conv2d(network, n_filter = self.filter_base, name ='discriminator_conv2d_%s'%str(i))
                 network = tl.layers.BatchNormLayer(network, act = leaky_relu, name ='discriminator_batchnorm_layer_%s'%str(i))
-                network = tl.layers.MaxPool2d(network, name='discriminator_maxpool_%s'%str(i))
+                # network = tl.layers.MaxPool2d(network, name='discriminator_maxpool_%s'%str(i))
             network = tl.layers.FlattenLayer(network)
-            network = tl.layers.DenseLayer(network, n_units = self.fc_unit_num, act = tf.nn.relu, name = 'discriminator_dense_layer')
-            network = tl.layers.DenseLayer(network, n_units = 1, act = tf.nn.sigmoid, name = 'discriminator_dense_layer_final')
+            # network = tl.layers.DenseLayer(network, n_units = self.fc_unit_num, act = tf.nn.relu, name = 'discriminator_dense_layer')
+            network = tl.layers.DenseLayer(network, n_units = 1, act = tf.identity, name = 'discriminator_dense_layer_final')
+            # Only use identity in the last layer, or the collapse problem occures
             return network.outputs
 
     def getGenerator(self, noise_ph):

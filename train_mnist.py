@@ -25,5 +25,5 @@ if __name__ == '__main__':
     # net = DCGAN(img_channel=1)
     # net.build(noise_ph, image_ph)
     # trainGAN(noise_ph, image_ph, net, handler, 
-        # output_img_dir='output/mnist/dcgan',
-        # output_csv_dir='output/mnist/dcgan/mnist_dcgan.csv')
+        # output_dir='output/mnist/dcgan',
+        # output_csv_name='mnist_dcgan.csv')
