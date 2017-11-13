@@ -37,8 +37,8 @@ class GAN(object):
                 network = tl.layers.BatchNormLayer(network, act = leaky_relu, name ='discriminator_batchnorm_layer_%s'%str(i))
                 network = tl.layers.MaxPool2d(network, name='discriminator_maxpool_%s'%str(i))
             network = tl.layers.FlattenLayer(network)
-            network = tl.layers.DenseLayer(network, n_units = self.fc_unit_num, act = tf.nn.relu, name ='discriminator_dense_layer')
-            network = tl.layers.DenseLayer(network, n_units = 1)
+            network = tl.layers.DenseLayer(network, n_units = self.fc_unit_num, act = tf.nn.relu, name = 'discriminator_dense_layer')
+            network = tl.layers.DenseLayer(network, n_units = 1, act = tf.nn.sigmoid, name = 'discriminator_dense_layer_final')
             return network.outputs
 
     def getGenerator(self, noise_ph):
@@ -58,8 +58,8 @@ class GAN(object):
                 width  = dense_recover_length * (2 ** (self.conv_depth - i + 1))
                 channel = self.filter_base * (2  ** (i - 1))
                 network = tl.layers.DeConv2d(network, n_out_channel = channel, strides = (2, 2), out_size = (height, width), name ='generator_decnn2d_%s'%str(1+i*2))
-                network = tl.layers.BatchNormLayer(network, act = tf.nn.sigmoid, name ='generator_batchnorm_layer_%s'%str(self.conv_depth-i+3))
-                print('!')
+                network = tl.layers.BatchNormLayer(network, act = tf.nn.relu, name ='generator_batchnorm_layer_%s'%str(self.conv_depth-i+3))
             network = tl.layers.DeConv2d(network, n_out_channel = self.img_depth, strides = (2, 2), out_size = (self.img_height, self.img_width), name ='generator_decnn2d_final')
             network = tl.layers.ReshapeLayer(network, [tf.shape(noise_ph)[0], self.img_height, self.img_width, self.img_depth], name ='generator_reshape_layer')
+            network = tl.layers.BatchNormLayer(network, act = tf.nn.tanh, name ='generator_batchnorm_layer_final')
             return network.outputs

@@ -37,7 +37,7 @@ class WassersterinGAN(GAN):
 
 
 class DCGAN(GAN):
-    def __init__(self, img_channel, filter_base = 16, fc_unit_num=1024, conv_depth=2, lambda_panelty_factor = 10.0):
+    def __init__(self, img_channel, filter_base = 512, fc_unit_num=1024, conv_depth=2, lambda_panelty_factor = 10.0):
         super(DCGAN, self).__init__(filter_base, fc_unit_num, conv_depth, lambda_panelty_factor, img_channel, name='dcgan_')
 
     def build(self, noise_ph, image_ph):
@@ -57,8 +57,8 @@ class DCGAN(GAN):
         generator_vars = [var for var in tf.global_variables() if 'generator' in var.name]
         discriminator_vars = [var for var in tf.global_variables() if 'discriminator' in var.name]
         with tf.control_dependencies(tf.get_collection(tf.GraphKeys.UPDATE_OPS)):
-            self.generator_optimize = tf.train.AdamOptimizer(learning_rate=0.0001, beta1=0.5, beta2=0.9).minimize(self.generator_loss, var_list=generator_vars)
-            self.discriminator_optimize = tf.train.AdamOptimizer(learning_rate=0.0001, beta1=0.5, beta2=0.9).minimize(self.discriminator_loss, var_list=discriminator_vars)
+            self.generator_optimize = tf.train.AdamOptimizer(learning_rate=0.0002, beta1=0.5, beta2=0.9).minimize(self.generator_loss, var_list=generator_vars)
+            self.discriminator_optimize = tf.train.AdamOptimizer(learning_rate=0.0002, beta1=0.5, beta2=0.9).minimize(self.discriminator_loss, var_list=discriminator_vars)
 
 
 if __name__ == '__main__':

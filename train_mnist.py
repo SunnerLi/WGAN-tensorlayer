@@ -12,11 +12,11 @@ if __name__ == '__main__':
     image_ph = tf.placeholder(tf.float32, [None, 28, 28, 1])
 
     # Train toward WGAN
-    net = WassersterinGAN(img_channel=1)
-    net.build(noise_ph, image_ph)
-    trainGAN(noise_ph, image_ph, net, handler, 
-        output_img_dir='output/mnist/wgan',
-        output_csv_dir='output/mnist/wgan/mnist_wgan.csv')
+    # net = WassersterinGAN(img_channel=1)
+    # net.build(noise_ph, image_ph)
+    # trainGAN(noise_ph, image_ph, net, handler, 
+        # output_img_dir='output/mnist/wgan',
+        # output_csv_dir='output/mnist/wgan/mnist_wgan.csv')
 
     # Train toward DCGAN
     net = DCGAN(img_channel=1)
