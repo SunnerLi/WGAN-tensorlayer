@@ -5,7 +5,7 @@ import cv2
 import os
 
 class ImageHandler(object):
-    def __init__(self, dataset_name='mnist', resize_length=64, batch_size=32):
+    def __init__(self, dataset_name='mnist', resize_length=28, batch_size=32):
         """
             dataset_name can be:
                 1. mnist
@@ -32,6 +32,13 @@ class ImageHandler(object):
             if not os.path.exists('data/mnist'):
                 download_mnist('data')
             self.image_tensor = self.load_mnist()
+
+            # Resize the image first
+            print('Resize MNIST image into ', self.resize_length, ' * ', self.resize_length)
+            resize_result = np.empty([len(self.image_tensor), self.resize_length, self.resize_length, 1], dtype=np.float)
+            for i in range(len(self.image_tensor)):
+                resize_result[i] = np.expand_dims(cv2.resize(self.image_tensor[i], (self.resize_length, self.resize_length)), axis=-1)
+            self.image_tensor = resize_result
         elif self.dataset_name == 'celeba':
             if not os.path.exists('data/celeba'):
                 download_celeb_a('data')

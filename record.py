@@ -1,3 +1,4 @@
+import pandas as pd
 import numpy as np
 import cv2
 import os
@@ -28,6 +29,18 @@ def saveGeneratedBatch(tensor, num_per_row, idx, output_dir='output'):
         else:
             res = np.concatenate((res, res_row), axis=0)
     cv2.imwrite(output_dir + '/' +str(idx) + '.png', res)
+
+def writeAsCSV(idx, generator_loss_list, discriminator_loss_list, output_dir, output_csv_name):
+    # Check output dir
+    if not os.path.exists(output_dir):
+        os.system('mkdir -p ' + output_dir)
+
+    columns = ['epoch', 'g_loss', 'd_loss']
+    df = pd.DataFrame(0, index = range(idx+1) ,columns = columns)
+    df['epoch'] = range(idx+1)
+    df['g_loss'] = generator_loss_list
+    df['d_loss'] = discriminator_loss_list
+    df.to_csv(output_dir + '/' + output_csv_name)
 
 if __name__ == '__main__':
     saveGeneratedBatch(np.ones([32, 28, 28, 1], dtype=np.float) * 100, 8, 0, 'output/data/wgan')
