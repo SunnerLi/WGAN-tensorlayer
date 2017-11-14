@@ -4,7 +4,7 @@ from model.model import WassersterinGAN, DCGAN
 import tensorflow as tf
 import numpy as np
 
-epoch = 61
+epoch = 1
 
 def trainGAN(noise_ph, image_ph, net, image_handler, output_dir, output_csv_name, batch_size=32, n_critic=5):
     generator_loss_list = []

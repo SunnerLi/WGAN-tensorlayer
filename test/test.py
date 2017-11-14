@@ -1,5 +1,6 @@
+from _init_path import *
+from model2 import GaussianGAN1, GaussianGAN2, GaussianGAN3
 from data_helper import ImageHandler, generateNoice
-from model.model2 import GaussianGAN1, GaussianGAN2, GaussianGAN3
 import tensorflow as tf
 import numpy as np
 

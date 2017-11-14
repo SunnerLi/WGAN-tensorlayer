@@ -1,4 +1,4 @@
-from model.gan import GAN
+from gan import GAN
 import tensorlayer as tl
 import tensorflow as tf
 import math
@@ -96,9 +96,3 @@ class GaussianGAN3(GAN):
         with tf.control_dependencies(tf.get_collection(tf.GraphKeys.UPDATE_OPS)):
             self.generator_optimize = tf.train.AdamOptimizer(learning_rate=0.0002, beta1=0.5, beta2=0.9).minimize(self.generator_loss, var_list=generator_vars)
             self.discriminator_optimize = tf.train.AdamOptimizer(learning_rate=0.005, beta1=0.5, beta2=0.9).minimize(self.discriminator_loss, var_list=discriminator_vars)        
-
-if __name__ == '__main__':
-    noise_ph = tf.placeholder(tf.float32, [None, 100])
-    image_ph = tf.placeholder(tf.float32, [None, 28, 28, 1])
-    net = GaussianGAN3(img_channel=1)
-    net.build(noise_ph, image_ph)

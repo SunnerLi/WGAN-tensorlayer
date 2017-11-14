@@ -40,7 +40,7 @@ class ImageHandler(object):
                 resize_result[i] = np.expand_dims(cv2.resize(self.image_tensor[i], (self.resize_length, self.resize_length)), axis=-1)
             self.image_tensor = resize_result
         elif self.dataset_name == 'celeba':
-            if not os.path.exists('data/celeba'):
+            if not os.path.exists('data/celebA'):
                 download_celeb_a('data')
             self.image_tensor = glob('data/celebA/*.jpg')
         else:

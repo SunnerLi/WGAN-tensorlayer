@@ -8,9 +8,9 @@ import numpy as np
 
 if __name__ == '__main__':
     # Train toward WGAN    
-    handler = ImageHandler(dataset_name='mnist', resize_length=28)
+    handler = ImageHandler(dataset_name='mnist', resize_length=32)
     noise_ph = tf.placeholder(tf.float32, [None, 100])
-    image_ph = tf.placeholder(tf.float32, [None, 28, 28, 1])
+    image_ph = tf.placeholder(tf.float32, [None, 32, 32, 1])
     net = WassersterinGAN(img_channel=1)
     net.build(noise_ph, image_ph)
     trainGAN(noise_ph, image_ph, net, handler, 

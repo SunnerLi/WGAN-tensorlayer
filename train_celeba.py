@@ -1,9 +1,8 @@
 from _init_path import *
 from data_helper import ImageHandler, generateNoice
+from model.model import WassersterinGAN, DCGAN
 from record import saveGeneratedBatch
-from wgan import WassersterinGAN
 from train import trainGAN
-from dcgan import DCGAN
 import tensorflow as tf
 import numpy as np
 
@@ -18,7 +17,7 @@ if __name__ == '__main__':
     trainGAN(noise_ph, image_ph, net, handler, 
         output_dir='output/celeba/wgan',
         output_csv_name='celeba_wgan.csv')
-# 
+
     # Train toward DCGAN
     net = DCGAN(img_channel=3)
     net.build(noise_ph, image_ph)
