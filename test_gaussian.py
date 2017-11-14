@@ -16,14 +16,18 @@ if __name__ == '__main__':
         output_dir='output/mnist/gaussian1',
         output_csv_name='mnist_gaussian1.csv')
 
-    net = GaussianGAN2(img_channel=1)
-    net.build(noise_ph, image_ph)
-    trainGAN(noise_ph, image_ph, net, handler, 
-        output_dir='output/mnist/gaussian2',
-        output_csv_name='mnist_gaussian2.csv')
-
-    net = GaussianGAN3(img_channel=1)
-    net.build(noise_ph, image_ph)
-    trainGAN(noise_ph, image_ph, net, handler, 
-        output_dir='output/mnist/gaussian3',
-        output_csv_name='mnist_gaussian3.csv')
+    # noise_ph = tf.placeholder(tf.float32, [None, 100])
+    # image_ph = tf.placeholder(tf.float32, [None, 28, 28, 1])
+    # net = GaussianGAN2(img_channel=1)
+    # net.build(noise_ph, image_ph)
+    # trainGAN(noise_ph, image_ph, net, handler, 
+        # output_dir='output/mnist/gaussian2',
+        # output_csv_name='mnist_gaussian2.csv')
+# 
+    # noise_ph = tf.placeholder(tf.float32, [None, 100])
+    # image_ph = tf.placeholder(tf.float32, [None, 28, 28, 1])
+    # net = GaussianGAN3(img_channel=1)
+    # net.build(noise_ph, image_ph)
+    # trainGAN(noise_ph, image_ph, net, handler, 
+        # output_dir='output/mnist/gaussian3',
+        # output_csv_name='mnist_gaussian3.csv')

@@ -10,7 +10,8 @@ def trainGAN(noise_ph, image_ph, net, image_handler, output_dir, output_csv_name
     generator_loss_list = []
     discriminator_loss_list = []
 
-    with tf.Session() as sess:
+    options = tf.GPUOptions(per_process_gpu_memory_fraction=0.1, allow_growth=True)
+    with tf.Session(config=tf.ConfigProto(gpu_options=options)) as sess:
         sess.run(tf.global_variables_initializer())
         for i in range(epoch):
             _generator_loss_list = []
@@ -26,7 +27,7 @@ def trainGAN(noise_ph, image_ph, net, image_handler, output_dir, output_csv_name
                         _discriminator_loss, _ = sess.run([net.discriminator_loss, net.discriminator_optimize], feed_dict=feed_dict)
                         discriminator_loss += _discriminator_loss
                     _discriminator_loss_list.append(discriminator_loss / 5)
-                elif type(net) == DCGAN:
+                elif type(net) != WassersterinGAN:
                     feed_dict = {
                         noise_ph: generateNoice(batch_size, 100),
                         image_ph: image_handler.getBatchImage()
